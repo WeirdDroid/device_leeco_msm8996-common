@@ -7,7 +7,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-# http://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,52 +26,39 @@ LINEAGE_ROOT="${MY_DIR}"/../../..
 
 HELPER="${LINEAGE_ROOT}/vendor/lineage/build/tools/extract_utils.sh"
 if [ ! -f "${HELPER}" ]; then
-	echo "Unable to find helper script at $HELPER"
-	exit 1
+    echo "Unable to find helper script at ${HELPER}"
+    exit 1
 fi
 source "${HELPER}"
 
 # Default to sanitizing the vendor folder before extraction
 CLEAN_VENDOR=true
+
+SECTION=
 KANG=
 
-while [ "$#" -gt 0 ]; do
-	case "$1" in
-	-n|--no-cleanup)
-		CLEAN_VENDOR=false
-		;;
-	-k|--kang)
-		KANG="--kang"
-		;;
-	-s|--section)
-		SECTION="$2"; shift
-		CLEAN_VENDOR=false
-		;;
-	*)
-		SRC="$1"
-		;;
-	esac
-	shift
+while [ "${#}" -gt 0 ]; do
+    case "${1}" in
+        -n | --no-cleanup )
+                CLEAN_VENDOR=false
+                ;;
+        -k | --kang )
+                KANG="--kang"
+                ;;
+        -s | --section )
+                SECTION="${2}"; shift
+                CLEAN_VENDOR=false
+                ;;
+        * )
+                SRC="${1}"
+                ;;
+    esac
+    shift
 done
 
-if [ -z "$SRC" ]; then
-	SRC=adb
+if [ -z "${SRC}" ]; then
+    SRC="adb"
 fi
-
-function blob_fixup() {
-	case "${1}" in
-
-	# Correct android.hidl.manager@1.0-java jar name
-	vendor/etc/permissions/qti_libpermissions.xml)
-		sed -i -e 's|name=\"android.hidl.manager-V1.0-java|name=\"android.hidl.manager@1.0-java|g' "${2}"
-		;;
-
-	# Hax libaudcal.so to store acdbdata in new path
-	vendor/lib/libaudcal.so | vendor/lib64/libaudcal.so)
-		sed -i -e 's|\/data\/vendor\/misc\/audio\/acdbdata\/delta\/|\/data\/vendor\/audio\/acdbdata\/delta\/\x00\x00\x00\x00\x00|g' "${2}"
-		;;
-	esac
-}
 
 # Initialize the helper for common device
 setup_vendor "${DEVICE_COMMON}" "${VENDOR}" "${LINEAGE_ROOT}" true "${CLEAN_VENDOR}"
@@ -88,4 +75,4 @@ if [ -s "${MY_DIR}/../${DEVICE}/proprietary-files.txt" ]; then
             "${KANG}" --section "${SECTION}"
 fi
 
-source "${MY_DIR}/setup-makefiles.sh"
+"${MY_DIR}/setup-makefiles.sh"

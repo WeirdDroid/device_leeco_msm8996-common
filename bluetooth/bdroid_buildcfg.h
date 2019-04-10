@@ -24,17 +24,22 @@
 
 #include <cutils/properties.h>
 #include <string.h>
-static inline const char *BtmGetDefaultName()
+
+static inline const char* BtmGetDefaultName()
 {
     char product_device[PROPERTY_VALUE_MAX];
     property_get("ro.product.device", product_device, "");
 
-    if (strcmp(product_device, "le_zl0") == 0)
-        return "LePro 3";
-    if (strcmp(product_device, "le_zl1") == 0)
-        return "LePro 3";
-    if (strcmp(product_device, "le_x2") == 0)
-        return "Le Max 2";
+    if (strstr(product_device, "capricorn"))
+        return "Xiaomi MI 5s";
+    if (strstr(product_device, "gemini"))
+        return "Xiaomi MI 5";
+    if (strstr(product_device, "lithium"))
+        return "Xiaomi MI MIX";
+    if (strstr(product_device, "natrium"))
+        return "Xiaomi MI 5s Plus";
+    if (strstr(product_device, "scorpio"))
+        return "Xiaomi MI Note 2";
 
     // Fallback to ro.product.model
     return "";
@@ -42,11 +47,9 @@ static inline const char *BtmGetDefaultName()
 
 #define BTM_DEF_LOCAL_NAME BtmGetDefaultName()
 #define BLUETOOTH_QTI_SW TRUE
-// Disables read remote device feature
 #define MAX_ACL_CONNECTIONS   16
 #define MAX_L2CAP_CHANNELS    16
 #define BLE_VND_INCLUDED   TRUE
-// skips conn update at conn completion
 #define BT_CLEAN_TURN_ON_DISABLED 1
 
 /* Increasing SEPs to 12 from 6 to support SHO/MCast i.e. two streams per codec */
